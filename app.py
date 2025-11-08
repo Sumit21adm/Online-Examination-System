@@ -496,7 +496,7 @@ def list_exams():
         # Show only upcoming and ongoing exams
         exams = Examination.query.filter(Examination.end_time > now).all()
     
-    return render_template('list_exams.html', exams=exams)
+    return render_template('list_exams.html', exams=exams, now=now)
 
 @app.route('/results')
 @login_required

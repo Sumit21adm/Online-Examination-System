@@ -23,7 +23,6 @@
                     </thead>
                     <tbody>
                         {% for exam in exams %}
-                        {% set now = [] %}
                         <tr>
                             <td>{{ exam.title }}</td>
                             <td>{{ exam.description[:50] if exam.description else 'N/A' }}</td>
@@ -31,9 +30,9 @@
                             <td>{{ exam.duration_minutes }} min</td>
                             <td>{{ exam.total_marks }}</td>
                             <td>
-                                {% if exam.end_time < now|default([], true) %}
+                                {% if exam.end_time < now %}
                                     <span class="badge bg-secondary">Ended</span>
-                                {% elif exam.start_time < now|default([], true) %}
+                                {% elif exam.start_time < now %}
                                     <span class="badge bg-success">Ongoing</span>
                                 {% else %}
                                     <span class="badge bg-primary">Upcoming</span>
