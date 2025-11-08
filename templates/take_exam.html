@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Take Exam - {{ exam.title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">{{ exam.title }}</h4>
+        <span id="timer" class="badge bg-danger fs-5">Time: {{ exam.duration_minutes }}:00</span>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <strong>Instructions:</strong>
+            <ul class="mb-0">
+                <li>Answer all questions to the best of your ability</li>
+                <li>Timer will start automatically</li>
+                <li>Exam will auto-submit when time expires</li>
+                <li>Make sure to click Submit before time runs out</li>
+            </ul>
+        </div>
+        
+        <form method="POST" action="{{ url_for('take_exam', exam_id=exam.id) }}" id="examForm">
+            {% for question in questions %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6>Question {{ loop.index }}</h6>
+                        <span class="badge bg-info">{{ question.marks }} marks</span>
+                    </div>
+                    <p>{{ question.question_text }}</p>
+                    
+                    {% if question.question_type == 'mcq' %}
+                        {% set opts = question.options|from_json %}
+                        {% for opt in opts %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" 
+                                   id="q{{ question.id }}_opt{{ loop.index0 }}" value="{{ loop.index0 }}" required>
+                            <label class="form-check-label" for="q{{ question.id }}_opt{{ loop.index0 }}">
+                                {{ opt }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    
+                    {% elif question.question_type == 'fill_blank' %}
+                        <input type="text" class="form-control" name="question_{{ question.id }}" 
+                               placeholder="Enter your answer" required>
+                    
+                    {% elif question.question_type == 'true_false' %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" 
+                                   id="q{{ question.id }}_true" value="True" required>
+                            <label class="form-check-label" for="q{{ question.id }}_true">True</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" 
+                                   id="q{{ question.id }}_false" value="False" required>
+                            <label class="form-check-label" for="q{{ question.id }}_false">False</label>
+                        </div>
+                    
+                    {% elif question.question_type == 'brief' %}
+                        <textarea class="form-control" name="question_{{ question.id }}" rows="4" 
+                                  placeholder="Write your answer here" required></textarea>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Are you sure you want to submit?')">
+                    Submit Exam
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let timeLeft = {{ exam.duration_minutes }} * 60; // in seconds
+const timerElement = document.getElementById('timer');
+const examForm = document.getElementById('examForm');
+
+function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerElement.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    if (timeLeft <= 0) {
+        alert('Time is up! The exam will be submitted automatically.');
+        examForm.submit();
+    }
+    
+    timeLeft--;
+}
+
+setInterval(updateTimer, 1000);
+</script>
+{% endblock %}
