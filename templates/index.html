@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Online Examination System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">📝 Online Examination System</h1>
+        <p class="lead mb-4">
+            A comprehensive platform for conducting online examinations with automated grading and result management.
+        </p>
+        
+        {% if not current_user.is_authenticated %}
+        <div class="d-grid gap-2 d-md-block">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-2">Get Started</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">Login</a>
+        </div>
+        {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+        {% endif %}
+        
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">👤 User Management</h5>
+                        <p class="card-text">Easy registration and login system with secure authentication.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">📅 Exam Scheduling</h5>
+                        <p class="card-text">Create and schedule exams with flexible timing options.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">✅ Auto-Grading</h5>
+                        <p class="card-text">Automatic checking for MCQ, fill-in-blanks, and true/false questions.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">🎫 Admit Cards</h5>
+                        <p class="card-text">Generate and download admit cards in PDF format.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">📊 Results</h5>
+                        <p class="card-text">View detailed results with marks and performance analysis.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">📧 Email Notifications</h5>
+                        <p class="card-text">Automated result notifications via email.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

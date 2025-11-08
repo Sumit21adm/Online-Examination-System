@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exam.title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">{{ exam.title }}</h4>
+    </div>
+    <div class="card-body">
+        <p><strong>Description:</strong> {{ exam.description or 'No description' }}</p>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Start Time:</strong> {{ exam.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>End Time:</strong> {{ exam.end_time.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Duration:</strong> {{ exam.duration_minutes }} minutes</p>
+                <p><strong>Total Marks:</strong> {{ exam.total_marks }}</p>
+                <p><strong>Passing Marks:</strong> {{ exam.passing_marks }}</p>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <h5>Questions ({{ questions|length }})</h5>
+        {% if questions %}
+            {% for question in questions %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6>Question {{ loop.index }}</h6>
+                        <span class="badge bg-info">{{ question.question_type.upper() }}</span>
+                    </div>
+                    <p>{{ question.question_text }}</p>
+                    
+                    {% if question.question_type == 'mcq' and question.options %}
+                        {% set opts = question.options|from_json %}
+                        <ul>
+                            {% for opt in opts %}
+                            <li>{{ opt }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    
+                    {% if current_user.is_admin %}
+                        <small class="text-muted">Correct Answer: {{ question.correct_answer }}</small>
+                    {% endif %}
+                    
+                    <p class="mb-0"><strong>Marks: {{ question.marks }}</strong></p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">No questions added yet.</p>
+        {% endif %}
+        
+        <div class="mt-4">
+            {% if not current_user.is_admin %}
+                {% if existing_result %}
+                    <div class="alert alert-info">
+                        You have already taken this exam. 
+                        <a href="{{ url_for('view_result', result_id=existing_result.id) }}">View your result</a>
+                    </div>
+                {% else %}
+                    {% set now = namespace() %}
+                    {% set now.value = None %}
+                    {% if now.value == None %}
+                        {% set now.value = [] %}
+                    {% endif %}
+                    <a href="{{ url_for('admit_card', exam_id=exam.id) }}" class="btn btn-secondary">Download Admit Card</a>
+                    <a href="{{ url_for('take_exam', exam_id=exam.id) }}" class="btn btn-primary">Start Exam</a>
+                {% endif %}
+            {% else %}
+                <a href="{{ url_for('add_questions', exam_id=exam.id) }}" class="btn btn-primary">Add More Questions</a>
+            {% endif %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

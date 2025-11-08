@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Student Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📅 Upcoming Exams</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_exams %}
+                    <div class="list-group">
+                        {% for exam in upcoming_exams %}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">{{ exam.title }}</h6>
+                            <p class="mb-1 small">{{ exam.description }}</p>
+                            <small class="text-muted">
+                                Start: {{ exam.start_time.strftime('%Y-%m-%d %H:%M') }}<br>
+                                Duration: {{ exam.duration_minutes }} minutes
+                            </small>
+                            <div class="mt-2">
+                                <a href="{{ url_for('view_exam', exam_id=exam.id) }}" class="btn btn-sm btn-primary">View Details</a>
+                                <a href="{{ url_for('admit_card', exam_id=exam.id) }}" class="btn btn-sm btn-secondary">Download Admit Card</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No upcoming exams available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📊 My Results</h5>
+            </div>
+            <div class="card-body">
+                {% if results %}
+                    <div class="list-group">
+                        {% for result in results %}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">{{ result.exam.title }}</h6>
+                            <p class="mb-1">
+                                Marks: {{ result.marks_obtained }}/{{ result.total_marks }} 
+                                ({{ "%.2f"|format(result.percentage) }}%)
+                            </p>
+                            <small class="badge bg-{{ 'success' if result.status == 'pass' else 'danger' }}">
+                                {{ result.status.upper() }}
+                            </small>
+                            <div class="mt-2">
+                                <a href="{{ url_for('view_result', result_id=result.id) }}" class="btn btn-sm btn-info">View Details</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No results available yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
